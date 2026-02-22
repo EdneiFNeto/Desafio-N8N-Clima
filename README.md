@@ -125,10 +125,10 @@ n8n start
 3.  Execute:
 
 ```{=html}
-<!-- -->
-```
     /start
     /newbot
+```
+    
 
 4.  Defina:
 
