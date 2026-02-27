@@ -2,197 +2,238 @@
 
 ## 📌 Descrição
 
-Este projeto implementa um **Agente de Clima** utilizando **n8n**
-integrado ao **Telegram**.
+Este projeto implementa um **Agente de Clima** utilizando **n8n** integrado ao **Telegram**.
 
-O agente permite que usuários consultem a **temperatura atual e as
-condições climáticas** de qualquer cidade do Brasil diretamente pelo
-Telegram.
+O agente permite que usuários consultem a **temperatura atual e as condições climáticas** de qualquer cidade do Brasil diretamente pelo Telegram.
 
-O fluxo utiliza: - Telegram para interação com o usuário - n8n para
-orquestração - Agente de IA (OpenAI) para interpretação da mensagem -
-Tavily Search para obtenção de informações atualizadas sobre o clima
+### 🔄 Fluxo da aplicação
 
-O bot responde com: - 📍 Cidade\
-- 🌡️ Temperatura atual\
-- 🌤️ Condição do tempo
+* Telegram → interação com o usuário
+* n8n → orquestração do fluxo
+* OpenAI → interpretação da mensagem
+* OpenWeather → dados climáticos atualizados
 
-Exemplo de resposta:
+📌 Exemplo de resposta:
 
-📍 Cidade: Rio de Janeiro\
-🌡️ Temperatura: 28°C\
-🌧️ Condição: Pancadas de chuva à tarde
+> 🌧️ A temperatura em Minas Gerais é de 18°C com chuva leve.
 
-------------------------------------------------------------------------
+---
 
-## 🚀 Funcionalidades
+# 📋 Pré-requisitos
 
--   Consulta de clima em **linguagem natural**
--   Suporte apenas para **cidades do Brasil**
--   Informações apenas do **dia atual**
--   Validação de erros:
-    -   Cidade não informada
-    -   País diferente do Brasil
-    -   Perguntas fora de contexto
--   Respostas amigáveis com emojis
--   Integração completa via Telegram
+Antes de começar, você precisa ter:
 
-------------------------------------------------------------------------
+* n8n instalado
+* Conta no Telegram
+* Conta na OpenAI
+* Conta na OpenWeather
+* ngrok instalado
 
-## 🏗️ Arquitetura
+---
 
-Telegram → Webhook → n8n → AI Agent (OpenAI) → Tavily Search → Resposta
-Telegram
+# 🔑 Criando as API Keys
 
-------------------------------------------------------------------------
+## 🔹 OpenAI
 
-## 📋 Pré-requisitos
+1. Acesse: [https://platform.openai.com/](https://platform.openai.com/)
+2. Faça login
+3. Vá em **API Keys**
+4. Clique em **Create new secret key**
+5. Copie a chave gerada
 
--   n8n
--   Conta no Telegram
--   Conta no OpenAI (para o agente de IA)
--   Conta no Tavily
--   ngrok instalado
+---
 
-------------------------------------------------------------------------
+## 🔹 OpenWeather
 
-## 🔑 Criando a chave da OpenAI
+1. Acesse: [https://openweathermap.org/](https://openweathermap.org/)
+2. Faça login
+3. Vá em **API Keys**
+4. Clique em **Create Key**
+5. Copie sua chave
 
-1.  Acesse: https://platform.openai.com/
-2.  Crie uma conta ou faça login
-3.  Vá em **API Keys**
-4.  Clique em **Create new secret key**
-5.  Copie a chave gerada
+⚠️ A ativação pode levar alguns minutos.
 
-------------------------------------------------------------------------
+---
 
-## ⚙️ Configurando a OpenAI no n8n
+# 🤖 Criando o Bot no Telegram
 
-1.  Abra o workflow
-2.  No node **Chat Model / OpenAI**
-3.  Crie uma nova credencial
-4.  Cole sua **API Key**
-5.  Salve
+1. Abra o Telegram
+2. Procure por **@BotFather**
+3. Execute:
 
-------------------------------------------------------------------------
+```
+/start
+/newbot
+```
 
-## ▶️ Executando o projeto localmente
+4. Defina:
 
-### 1️⃣ Iniciar o n8n
+   * Nome do bot
+   * Username (deve terminar com `bot`)
 
-``` bash
+5. Copie o **Bot Token**
+
+---
+
+# ⚙️ Configurando o n8n
+
+## 🔹 Configurar OpenAI
+
+1. Abra o workflow
+2. No node **Chat Model / OpenAI**
+3. Crie nova credencial
+4. Cole sua **API Key**
+5. Salve
+
+---
+
+## 🔹 Adicionar o Node HTTP Request (OpenWeather)
+
+1. Clique em **+**
+2. Procure por **HTTP Request**
+3. Adicione ao fluxo
+
+### 🔸 Configuração
+
+**Método:** `GET`
+**URL:**
+
+```
+https://api.openweathermap.org/data/2.5/weather
+```
+
+---
+
+## 🔹 Configurar Query Parameters
+
+Clique em **Add Parameter** e adicione:
+
+| Nome  | Valor                        |
+| ----- | ---------------------------- |
+| q     | Cidade,UF,BR                 |
+| appid | {{$env.OPENWEATHER_API_KEY}} |
+| units | metric                       |
+| lang  | pt_br                        |
+
+### 🔎 Explicação
+
+* `q` → Cidade recebida do usuário + ,BR
+* `appid` → Sua API Key
+* `units=metric` → Temperatura em Celsius
+* `lang=pt_br` → Resposta em português
+
+---
+
+## 🧪 Testar a Requisição
+
+Clique em **Execute Node**.
+
+Se estiver correto, você receberá algo como:
+
+```json
+{
+  "name": "Recife",
+  "main": {
+    "temp": 29.5
+  },
+  "weather": [
+    {
+      "description": "céu limpo"
+    }
+  ]
+}
+```
+
+---
+
+# ▶️ 4️⃣ Executando o Projeto Localmente
+
+## 🔹 Iniciar o n8n
+
+```bash
 n8n start
 ```
 
-Acesse: http://localhost:5678
+Acesse:
 
-------------------------------------------------------------------------
+```
+http://localhost:5678
+```
 
-### 2️⃣ Expor o ambiente com ngrok
+---
 
-O Telegram exige um endpoint **HTTPS público** para webhooks.
+## 🔹 Expor com ngrok (Webhook HTTPS)
 
-Instale: https://ngrok.com/
+O Telegram exige um endpoint HTTPS público.
+
+Instale: [https://ngrok.com/](https://ngrok.com/)
 
 Execute:
 
-``` bash
+```bash
 ngrok http 5678
 ```
 
-Configure antes de iniciar o n8n:
+Copie a URL HTTPS gerada.
 
-Linux / Mac:
+---
 
-``` bash
+## 🔹 Configurar variável WEBHOOK_URL
+
+### Linux / Mac
+
+```bash
 export WEBHOOK_URL=https://sua-url-ngrok
 n8n start
 ```
 
-Windows (PowerShell):
+### Windows (PowerShell)
 
-``` powershell
+```powershell
 $env:WEBHOOK_URL="https://sua-url-ngrok"
 n8n start
 ```
 
-------------------------------------------------------------------------
+---
 
-## 🤖 Configurando o Bot no Telegram
+# 🧪  Como Usar
 
-1.  Abra o Telegram
-2.  Procure por **@BotFather**
-3.  Execute:
+No Telegram, envie:
 
-```{=html}
-    /start
-    /newbot
 ```
-    
+Rio de Janeiro, RJ
+```
 
-4.  Defina:
+O bot responderá com a temperatura atual e descrição do clima.
 
--   Nome do bot
--   Username (terminando em `bot`)
+---
 
-5.  Copie o **Bot Token**
+# ❌ Tratamento de Erros
 
-------------------------------------------------------------------------
+O agente retorna mensagem com 😢 quando:
 
-## 🔄 Importando o Workflow
+❌ Cidade não encontrada
 
-1.  Abra o n8n
-2.  Clique em **Import**
-3.  Selecione o arquivo JSON do workflow
-4.  Configure as credenciais:
-    -   OpenAI
-    -   Telegram
-    -   Tavily
-5.  Ative o workflow
+Use o formato:
 
-------------------------------------------------------------------------
+```
+Cidade,UF
+Ex: São Paulo,SP
+```
 
-## 🧪 Como usar
+---
 
-Envie no Telegram:
+# 🛠️ Tecnologias Utilizadas
 
-    Rio de Janeiro
-    Qual o clima em Recife?
-    Temperatura em São Paulo
+* n8n
+* OpenAI
+* Telegram Bot API
+* OpenWeather
+* ngrok
 
-------------------------------------------------------------------------
+---
 
-## ❌ Tratamento de erros
+# 📎 Observações
 
-O agente retorna mensagens com 😢 quando:
-
--   A cidade não é informada
--   A cidade não é do Brasil
--   A pergunta não está relacionada a clima
--   Os dados não podem ser obtidos
-
-------------------------------------------------------------------------
-
-## 🛠️ Tecnologias utilizadas
-
--   n8n
--   OpenAI
--   Telegram Bot API
--   Tavily Search
--   ngrok
-
-------------------------------------------------------------------------
-
-## 📎 Observações
-
--   O **ngrok** é necessário para permitir que o Telegram acesse o n8n
-    local via HTTPS.
--   Este projeto demonstra a integração de **Agentes de IA com automação
-    e mensageria**.
-
-------------------------------------------------------------------------
-
-## 👨‍💻 Autor
-
-Projeto desenvolvido como demonstração de automação com agentes de IA
-utilizando n8n.
+* O **ngrok** é necessário para permitir que o Telegram acesse o n8n local via HTTPS.
+* Este projeto demonstra a integração de **Agentes de IA com automação e mensageria**.
