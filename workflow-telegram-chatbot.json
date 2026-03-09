@@ -12,7 +12,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2304,
+        2528,
         -480
       ],
       "id": "15f02eda-1c43-42ed-b64f-4fd991aaafed",
@@ -31,7 +31,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2384,
+        2608,
         -256
       ],
       "id": "e6360738-cd78-4884-bac4-26c59e896297",
@@ -48,14 +48,14 @@
       "typeVersion": 1.2,
       "position": [
         1184,
-        -384
+        -288
       ],
       "id": "7bf5de2c-e69e-41fd-8910-9ddbd8e2fa77",
       "name": "Telegram Trigger1",
       "webhookId": "37dfb0ca-bd4a-4a0a-b749-99dc8d0cff0f",
       "credentials": {
         "telegramApi": {
-          "id": "pGLz5XtMw1wKXfkM",
+          "id": "1Le1LmDTRwKAQWn1",
           "name": "Telegram account"
         }
       }
@@ -69,7 +69,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2880,
+        3104,
         -480
       ],
       "id": "3469e573-84e8-41db-a2f3-68e992581761",
@@ -77,7 +77,7 @@
       "webhookId": "218b8635-2fd1-4922-80df-b104871d924a",
       "credentials": {
         "telegramApi": {
-          "id": "pGLz5XtMw1wKXfkM",
+          "id": "1Le1LmDTRwKAQWn1",
           "name": "Telegram account"
         }
       }
@@ -86,52 +86,17 @@
       "parameters": {
         "content": "Telegran-Clima-Bot",
         "height": 544,
-        "width": 2080,
+        "width": 2164,
         "color": 7
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        1040,
-        -656
+        1120,
+        -576
       ],
       "typeVersion": 1,
       "id": "6dc4eac0-683f-4c7a-845e-1fc10973d4d2",
       "name": "Sticky Note"
-    },
-    {
-      "parameters": {
-        "url": "https://api.openweathermap.org/data/2.5/weather",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "q",
-              "value": "={{ $json.message.text }}"
-            },
-            {
-              "name": "appid"
-            },
-            {
-              "name": "units",
-              "value": "metric"
-            },
-            {
-              "name": "lang",
-              "value": "pt_br"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        1632,
-        -384
-      ],
-      "id": "5366584f-7499-4c78-94a4-6ebf74dc96c7",
-      "name": "HTTP Request",
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -150,7 +115,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2080,
+        2304,
         -480
       ],
       "id": "1873e62d-d0b1-4475-936c-9a0514c5c5db",
@@ -173,11 +138,33 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2656,
+        2880,
         -480
       ],
       "id": "06321601-4a74-4345-af45-59394a99ebf9",
       "name": "response"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.from.id }}",
+        "text": "❌ Cidade não encontrada. Use o formato Cidade,UF (ex.: São Paulo,SP).",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2304,
+        -288
+      ],
+      "id": "5d0270fa-c2e5-4f4c-a4a4-c4dc0a9e9a1f",
+      "name": "Send a text message1",
+      "webhookId": "e5fa5349-a0b7-43f1-a7e1-fae0dbe71700",
+      "credentials": {
+        "telegramApi": {
+          "id": "1Le1LmDTRwKAQWn1",
+          "name": "Telegram account"
+        }
+      }
     },
     {
       "parameters": {
@@ -196,11 +183,27 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1408,
+        1632,
         -384
       ],
       "id": "53f39fba-1646-4784-82e0-992538bdcf34",
       "name": "queue"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger1').item.json.message.from.id }}",
+        "text": "❌ Cidade não encontrada. Use o formato Cidade,UF (ex.: São Paulo,SP).",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1632,
+        -192
+      ],
+      "id": "b64f28df-071c-4568-a8f9-774ebc3bc337",
+      "name": "Send a text message2",
+      "webhookId": "e5fa5349-a0b7-43f1-a7e1-fae0dbe71700"
     },
     {
       "parameters": {
@@ -213,23 +216,23 @@
           },
           "conditions": [
             {
-              "id": "0bf777d6-00d0-44e0-bf25-74c445c3e57a",
-              "leftValue": "={{ $json.coord }}",
+              "id": "cbb7e29a-2018-449a-a88f-b7d427fcf3f9",
+              "leftValue": "={{ $json.message.text }}",
               "rightValue": "",
               "operator": {
-                "type": "object",
-                "operation": "exists",
+                "type": "string",
+                "operation": "notEmpty",
                 "singleValue": true
               }
             },
             {
-              "id": "4b4521a0-56e8-4f7d-aa93-dd615f45766e",
-              "leftValue": "={{ $json.main }}",
+              "id": "97f91c0c-fd0d-4db1-b678-93288c0193cc",
+              "leftValue": "",
               "rightValue": "",
               "operator": {
-                "type": "object",
-                "operation": "exists",
-                "singleValue": true
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
               }
             }
           ],
@@ -240,39 +243,113 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1856,
-        -384
+        1408,
+        -288
       ],
-      "id": "19379bf8-776f-47d7-997e-a0d49568b731",
-      "name": "If"
+      "id": "98929320-af71-4fae-9d78-c5242c8617d8",
+      "name": "valid_empty_message"
     },
     {
       "parameters": {
-        "chatId": "={{ $('Telegram Trigger1').item.json.message.from.id }}",
-        "text": "❌ Cidade não encontrada. Use o formato Cidade,UF (ex.: São Paulo,SP).",
-        "additionalFields": {}
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.cod }}",
+                    "rightValue": 200,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "78607416-7f8e-4ff8-888c-8d7d5d079f17"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Authorized"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b316ea1a-4533-4561-80d2-afe0e160db0e",
+                    "leftValue": "={{ $json.error.status }}",
+                    "rightValue": 399,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
       "position": [
         2080,
-        -288
+        -400
       ],
-      "id": "5d0270fa-c2e5-4f4c-a4a4-c4dc0a9e9a1f",
-      "name": "Send a text message1",
-      "webhookId": "e5fa5349-a0b7-43f1-a7e1-fae0dbe71700"
+      "id": "2fe6245c-2fcf-437a-8c4b-328d3995a52e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.message.text }}"
+            },
+            {
+              "name": "appid",
+              "value": "6efd06ba145635e230eea96650ffa0f8"
+            },
+            {
+              "name": "units",
+              "value": "metric"
+            },
+            {
+              "name": "lang",
+              "value": "pt_br"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1856,
+        -384
+      ],
+      "id": "5366584f-7499-4c78-94a4-6ebf74dc96c7",
+      "name": "WeatherAPI",
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
-    "queue": [
-      {
-        "json": {
-          "message": {
-            "text": "xxxxx,BR"
-          }
-        }
-      }
-    ],
     "Telegram Trigger1": [
       {
         "json": {
@@ -293,11 +370,8 @@
               "type": "private"
             },
             "date": 1772156702,
-            "text": "Rio de Janeiro, RJ"
+            "text": ""
           }
-        },
-        "pairedItem": {
-          "item": 0
         }
       }
     ]
@@ -329,7 +403,7 @@
       "main": [
         [
           {
-            "node": "queue",
+            "node": "valid_empty_message",
             "type": "main",
             "index": 0
           }
@@ -339,17 +413,6 @@
     "Send a text message": {
       "main": [
         []
-      ]
-    },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
       ]
     },
     "parserResponse": {
@@ -378,14 +441,32 @@
       "main": [
         [
           {
-            "node": "HTTP Request",
+            "node": "WeatherAPI",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If": {
+    "valid_empty_message": {
+      "main": [
+        [
+          {
+            "node": "queue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
       "main": [
         [
           {
@@ -402,6 +483,17 @@
           }
         ]
       ]
+    },
+    "WeatherAPI": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -410,7 +502,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "7beafaec-f128-41f9-af67-c3f2cce97b03",
+  "versionId": "571af7a8-48d1-4c4b-9ba7-57d32ad82212",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "79662fafd4c4840cc39132e717209a49dbeaf438f162e61a6c6189cb1eef43d9"
