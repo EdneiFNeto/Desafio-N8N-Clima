@@ -2,238 +2,225 @@
 
 ## 📌 Descrição
 
-Este projeto implementa um **Agente de Clima** utilizando **n8n** integrado ao **Telegram**.
+Este projeto implementa um **Agente de Clima** utilizando **n8n**
+integrado ao **Telegram**.
 
-O agente permite que usuários consultem a **temperatura atual e as condições climáticas** de qualquer cidade do Brasil diretamente pelo Telegram.
+O agente permite que usuários consultem a **temperatura atual e as
+condições climáticas** de qualquer cidade do Brasil diretamente pelo
+Telegram.
 
 ### 🔄 Fluxo da aplicação
 
-* Telegram → interação com o usuário
-* n8n → orquestração do fluxo
-* OpenAI → interpretação da mensagem
-* OpenWeather → dados climáticos atualizados
+-   Telegram → interação com o usuário
+-   n8n → orquestração do fluxo
+-   OpenAI → interpretação da mensagem
+-   OpenWeather → dados climáticos atualizados
 
 📌 Exemplo de resposta:
 
 > 🌧️ A temperatura em Minas Gerais é de 18°C com chuva leve.
 
----
+------------------------------------------------------------------------
 
 # 📋 Pré-requisitos
 
 Antes de começar, você precisa ter:
 
-* n8n instalado
-* Conta no Telegram
-* Conta na OpenAI
-* Conta na OpenWeather
-* ngrok instalado
+-   n8n instalado
+-   Conta no Telegram
+-   Conta na OpenAI
+-   Conta na OpenWeather
+-   ngrok instalado
 
----
+------------------------------------------------------------------------
+
+# 📥 Importando o Workflow no n8n
+
+Antes de configurar as credenciais, é necessário **importar o workflow
+do projeto para dentro do n8n**.
+
+O n8n permite importar workflows de duas formas: **via arquivo** ou
+**via URL**.
+
+## 🔹 Importar Workflow via Arquivo
+
+1.  Abra o **n8n** no navegador:
+    http://localhost:5678
+
+2.  No menu lateral clique em **Workflows**
+3.  Clique em **Import**
+4.  Selecione **From File**
+5.  Escolha o arquivo `.json` do workflow
+6.  Clique em **Import**
+
+------------------------------------------------------------------------
+
+## 🔹 Importar Workflow via URL
+
+1.  Abra o **n8n**
+2.  Clique em **Workflows**
+3.  Clique em **Import**
+4.  Selecione **From URL**
+5.  Cole a URL do arquivo `.json`
+6.  Clique em **Import**
+
+------------------------------------------------------------------------
 
 # 🔑 Criando as API Keys
 
 ## 🔹 OpenAI
 
-1. Acesse: [https://platform.openai.com/](https://platform.openai.com/)
-2. Faça login
-3. Vá em **API Keys**
-4. Clique em **Create new secret key**
-5. Copie a chave gerada
+1.  Acesse: https://platform.openai.com/
+2.  Faça login
+3.  Vá em **API Keys**
+4.  Clique em **Create new secret key**
+5.  Copie a chave gerada
 
----
+------------------------------------------------------------------------
 
 ## 🔹 OpenWeather
 
-1. Acesse: [https://openweathermap.org/](https://openweathermap.org/)
-2. Faça login
-3. Vá em **API Keys**
-4. Clique em **Create Key**
-5. Copie sua chave
+1.  Acesse: https://openweathermap.org/
+2.  Faça login
+3.  Vá em **API Keys**
+4.  Clique em **Create Key**
+5.  Copie sua chave
 
 ⚠️ A ativação pode levar alguns minutos.
 
----
+------------------------------------------------------------------------
 
 # 🤖 Criando o Bot no Telegram
 
-1. Abra o Telegram
-2. Procure por **@BotFather**
-3. Execute:
+1.  Abra o Telegram
+2.  Procure por **@BotFather**
+3.  Execute:
 
-```
+```{=html}
 /start
 /newbot
 ```
+    
+4.  Defina:
 
-4. Defina:
+-   Nome do bot
+-   Username (deve terminar com `bot`)
 
-   * Nome do bot
-   * Username (deve terminar com `bot`)
+5.  Copie o **Bot Token**
 
-5. Copie o **Bot Token**
+------------------------------------------------------------------------
 
----
+# 🔐 Configurando Credenciais no n8n
 
-# ⚙️ Configurando o n8n
+O **n8n** utiliza o **Credential Manager** para armazenar tokens e
+chaves de API.
 
-## 🔹 Configurar OpenAI
+## 🔹 Credencial do Telegram
 
-1. Abra o workflow
-2. No node **Chat Model / OpenAI**
-3. Crie nova credencial
-4. Cole sua **API Key**
-5. Salve
+1.  No **n8n**, vá em **Credentials**
+2.  Clique em **Create Credential**
+3.  Escolha **Telegram API**
+4.  No campo **Access Token**, cole o **Bot Token** obtido com o
+    **BotFather**
+5.  Clique em **Save**
 
----
+------------------------------------------------------------------------
 
-## 🔹 Adicionar o Node HTTP Request (OpenWeather)
+## 🔹 Credencial da OpenAI
 
-1. Clique em **+**
-2. Procure por **HTTP Request**
-3. Adicione ao fluxo
+1.  Abra o workflow
+2.  Clique no node **OpenAI**
+3.  Em **Credentials**, clique em **Create New**
+4.  Cole sua **API Key**
+5.  Clique em **Save**
 
-### 🔸 Configuração
+------------------------------------------------------------------------
 
-**Método:** `GET`
-**URL:**
+# ⚙️ Configurando o Node HTTP Request (OpenWeather)
 
-```
-https://api.openweathermap.org/data/2.5/weather
-```
+**Método:** GET
 
----
+URL:
 
-## 🔹 Configurar Query Parameters
+    https://api.openweathermap.org/data/2.5/weather
 
-Clique em **Add Parameter** e adicione:
+## Query Parameters
 
-| Nome  | Valor                        |
-| ----- | ---------------------------- |
-| q     | Cidade,UF,BR                 |
-| appid | {{$env.OPENWEATHER_API_KEY}} |
-| units | metric                       |
-| lang  | pt_br                        |
+  Nome    Valor
+  ------- -------------------------------
+  q       Cidade,UF,BR
+  appid   {{\$env.OPENWEATHER_API_KEY}}
+  units   metric
+  lang    pt_br
 
-### 🔎 Explicação
+------------------------------------------------------------------------
 
-* `q` → Cidade recebida do usuário + ,BR
-* `appid` → Sua API Key
-* `units=metric` → Temperatura em Celsius
-* `lang=pt_br` → Resposta em português
+# ▶️ Executando o Projeto Localmente
 
----
+## Iniciar o n8n
 
-## 🧪 Testar a Requisição
-
-Clique em **Execute Node**.
-
-Se estiver correto, você receberá algo como:
-
-```json
-{
-  "name": "Recife",
-  "main": {
-    "temp": 29.5
-  },
-  "weather": [
-    {
-      "description": "céu limpo"
-    }
-  ]
-}
-```
-
----
-
-# ▶️ 4️⃣ Executando o Projeto Localmente
-
-## 🔹 Iniciar o n8n
-
-```bash
+``` bash
 n8n start
 ```
 
 Acesse:
 
-```
-http://localhost:5678
-```
+    http://localhost:5678
 
----
+------------------------------------------------------------------------
 
-## 🔹 Expor com ngrok (Webhook HTTPS)
+## Expor com ngrok
 
-O Telegram exige um endpoint HTTPS público.
-
-Instale: [https://ngrok.com/](https://ngrok.com/)
-
-Execute:
-
-```bash
+``` bash
 ngrok http 5678
 ```
 
 Copie a URL HTTPS gerada.
 
----
+------------------------------------------------------------------------
 
-## 🔹 Configurar variável WEBHOOK_URL
+# 🔑 Variáveis e Credenciais
 
-### Linux / Mac
+Para que o workflow funcione corretamente logo após a importação,
+algumas informações precisam estar configuradas.
 
-```bash
+## Credenciais no n8n
+
+| Serviço   | Informação necessária |
+|-----------|-----------------------|
+| Telegram  | Bot Token             |
+|  OpenAI   | API Key               |
+
+## Variáveis de ambiente
+
+| Variável             | Descrição              |
+|--------------------- | -----------------------|
+|  OPENWEATHER_API_KEY   | API Key do OpenWeather |
+| WEBHOOK_URL          | URL pública do ngrok. |
+
+Exemplo:
+
+``` bash
+export OPENWEATHER_API_KEY=sua_api_key
 export WEBHOOK_URL=https://sua-url-ngrok
-n8n start
 ```
 
-### Windows (PowerShell)
+------------------------------------------------------------------------
 
-```powershell
-$env:WEBHOOK_URL="https://sua-url-ngrok"
-n8n start
-```
+# 🧪 Como Usar
 
----
+No Telegram envie:
 
-# 🧪  Como Usar
-
-No Telegram, envie:
-
-```
-Rio de Janeiro, RJ
-```
+    Rio de Janeiro, RJ
 
 O bot responderá com a temperatura atual e descrição do clima.
 
----
-
-# ❌ Tratamento de Erros
-
-O agente retorna mensagem com 😢 quando:
-
-❌ Cidade não encontrada
-
-Use o formato:
-
-```
-Cidade,UF
-Ex: São Paulo,SP
-```
-
----
+------------------------------------------------------------------------
 
 # 🛠️ Tecnologias Utilizadas
 
-* n8n
-* OpenAI
-* Telegram Bot API
-* OpenWeather
-* ngrok
-
----
-
-# 📎 Observações
-
-* O **ngrok** é necessário para permitir que o Telegram acesse o n8n local via HTTPS.
-* Este projeto demonstra a integração de **Agentes de IA com automação e mensageria**.
+-   n8n
+-   OpenAI
+-   Telegram Bot API
+-   OpenWeather
+-   ngrok
