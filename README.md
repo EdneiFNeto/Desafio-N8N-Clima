@@ -1,4 +1,3 @@
-
 # 🌤️ Agente de Clima com n8n + Telegram
 
 ## 📌 Descrição
@@ -17,6 +16,8 @@ Antes de iniciar, você precisará ter instalado:
 * n8n
 * Conta no **Telegram**
 * Conta em uma **API de clima**
+* Conta na **OpenAI**
+* **Google Cloud** configurado para enviar email via Gmail
 * **ngrok** (para expor o webhook do n8n)
 
 ---
@@ -27,6 +28,7 @@ Antes de iniciar, você precisará ter instalado:
 
 telegram-weather-chatbot
 │
+├── LogErrorTelegram.json
 ├── workflow-telegram-chatbot.json
 └── README.md
 
@@ -40,6 +42,14 @@ workflow-telegram-chatbot.json
 
 ```
 
+Arquivo para capturar log de erro:
+
+```
+
+LogErrorTelegram.json
+
+```
+
 Este arquivo contém todo o **workflow configurado para o n8n**.
 
 ---
@@ -48,12 +58,11 @@ Este arquivo contém todo o **workflow configurado para o n8n**.
 
 Antes de configurar o bot, é necessário **baixar o workflow do projeto**.
 
-Baixe o arquivo:
+Baixe o arquivos:
 
 ```
-
 workflow-telegram-chatbot.json
-
+LogErrorTelegram.json
 ````
 
 Após baixar o arquivo, siga os passos abaixo para importá-lo no **n8n**.
@@ -143,6 +152,7 @@ Isso permitirá que o **Telegram envie mensagens para o seu workflow local**.
 
 ```
 workflow-telegram-chatbot.json
+LogErrorTelegram.json
 ```
 
 6. Clique em **Import**
@@ -276,64 +286,44 @@ Explicação:
 * **units=metric** → temperatura em Celsius
 * **lang=pt** → resposta em português
 
-Exemplo:
-
-Dentro do node WeatherAPI em **Query Parameters**, basta adicionar o query parameter **appid** com a **SUA_WEATHER_KEY_API**, explicada na seção Criando Conta na API de Clima OpenWeather.
-
-<img width="1278" height="803" alt="image" src="https://github.com/user-attachments/assets/5683cf00-0fca-4662-9a36-93f397aae586" />
+<img alt="image" src="https://github.com/user-attachments/assets/5683cf00-0fca-4662-9a36-93f397aae586" />
 
 ---
 
 # 🤖 Configurando API Key da OpenAI no n8n
 
-Aqui está um **passo a passo simples para obter sua API Key da OpenAI na OpenAI Platform** 🔑 e configurá-la no n8n.
-
----
+Aqui está um **passo a passo simples para obter sua API Key da OpenAI** e configurá-la no n8n.
 
 ## Criar ou acessar sua conta
 
 1. Acesse: [https://platform.openai.com](https://platform.openai.com)
 2. Clique em **Sign up** para criar conta ou **Log in** se já tiver uma.
-3. Você pode entrar usando:
-
-* Google
-* Microsoft
-* Apple
-* Email e senha
 
 ---
 
 ## Acessar a página de API Keys
 
-1. Após entrar na plataforma, abra diretamente:
-   [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-2. Essa página mostra **todas as chaves já criadas**.
+1. Abra: [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
 
 ---
 
 ## Criar uma nova API Key
 
-1. Clique no botão **Create new secret key**.
-2. Dê um **nome para a chave** (exemplo: `meu-app-teste`).
-3. Clique em **Create**.
+1. Clique em **Create new secret key**
+2. Dê um nome para a chave
+3. Clique em **Create**
 
 ---
 
 ## Copiar e salvar a chave
 
-* A chave será exibida **apenas uma vez**.
-* Copie e guarde em local seguro.
+Exemplo:
 
-Exemplo de formato:
-
-```text
+```
 sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-⚠️ **Importante**
-
-* Nunca publique essa chave no GitHub.
-* Use **variáveis de ambiente** no seu projeto.
+⚠️ Nunca publique essa chave no GitHub.
 
 ---
 
@@ -341,18 +331,17 @@ sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 1. Dentro do node **AI Agent**, no **Chat Model (OpenAI Chat Model)**, na opção **Credential to connect with**, selecione **Create a new Credential**.
 
-<img width="1130" height="669" alt="image" src="https://github.com/user-attachments/assets/18f42247-8f11-416d-97c1-b6f5dfc63cab" />
+<img alt="image" src="https://github.com/user-attachments/assets/18f42247-8f11-416d-97c1-b6f5dfc63cab" />
 
 2. Em **OpenAI account**, digite sua API Key depois clique em salvar. 
 
-<img width="820" height="700" alt="image" src="https://github.com/user-attachments/assets/fa36d2f6-fbe1-4e95-b490-4ab9bd2b2735" />
+<img alt="image" src="https://github.com/user-attachments/assets/fa36d2f6-fbe1-4e95-b490-4ab9bd2b2735" />
 
 ---
 
-
 # 💬 Configurando a Resposta do Bot
 
-No node **Telegram Send Message**, configure o campo **Text** com algo semelhante a:
+No node **Telegram Send Message**, configure o campo **Text** com:
 
 ```
 🌤️ Clima em {{$json["name"]}}
@@ -390,16 +379,11 @@ Umidade: 70%
 Condição: céu parcialmente nublado
 ```
 
+---
+
 # Configurando o Error Trigger
 
-O **Error Trigger** permite capturar erros que ocorrem em um workflow e executar ações automáticas, como:
-
-- enviar alertas
-- registrar logs
-- notificar administradores
-- executar rotinas de recuperação
-
-Neste projeto, ele é utilizado para **monitorar falhas no bot de clima do Telegram**.
+O **Error Trigger** permite capturar erros que ocorrem em um workflow e executar ações automáticas.
 
 ---
 
@@ -407,19 +391,13 @@ Neste projeto, ele é utilizado para **monitorar falhas no bot de clima do Teleg
 
 Dentro do workflow **Clima-Telegram**, no canto superior esquerdo da tela, clique no **menu de três pontos** e depois selecione **Settings**.
 
+![image](screenshots/settings.png)
 
+Em seguida, na janela **Workflow settings for Clima-Telegram**, localize a opção **Error Workflow (to notify when this one errors)**, selecione o workflow **LogErrortelegram** e clique em **Save**.
 
-Em seguida, na janela **Workflow settings for Clima-Telegram**, localize a opção:
+![image](screenshots/Workflow-settings.png)
 
-```
-
-Error Workflow (to notify when this one errors)
-
-```
-
-Selecione o workflow **LogErrortelegram**.
-
-⚠️ **Importante:**  
+⚠️ **Importante:**
 Os workflows **LogErrortelegram** e **Clima-Telegram** precisam estar **ativos** para que o tratamento de erro funcione corretamente.
 
 ---
@@ -428,36 +406,22 @@ Os workflows **LogErrortelegram** e **Clima-Telegram** precisam estar **ativos**
 
 Dentro do workflow **LogErrortelegram**, existe um node chamado **Send a message**, responsável por enviar os logs de erro por e-mail.
 
-Para configurá-lo, é necessário adicionar uma credencial do Gmail.
+Então, no campo **Credential to connect with**, selecione **Create a new Credential**.
 
-No campo:
-
-```
-
-Credential to connect with
-
-```
-
-Selecione:
-
-```
-
-Create a new Credential
-
-```
+![image](screenshots/Send-message-credential.png)
 
 Depois escolha **Gmail account** e preencha os seguintes campos:
 
-- **Client ID**
-- **Client Secret**
-- **OAuth Redirect URL**
+![image](screenshots/send-message-clientId-secret.png)
+
+* **Client ID**
+* **Client Secret**
+* **OAuth Redirect URL**
 
 O valor do **OAuth Redirect URL** deve seguir o formato:
 
 ```
-
 SUA_URL/rest/oauth2-credential/callback
-
 ```
 
 Exemplo:
@@ -466,9 +430,13 @@ Exemplo:
 https://seu-n8n.com/rest/oauth2-credential/callback
 ```
 
-Para obter o **Client ID** e **Client Secret**, siga o passo a passo da documentação oficial do n8n:
+Para obter o **Client ID** e **Client Secret**, siga a documentação oficial:
 
-https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/
+[https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/](https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/)
 
-![Credential Setup](https://github.com/)
+Por fim, ainda no node **Send a message**, é preciso adicionar um e-mail para receber os alertas. Basta mudar o campo **EMAIL_ADM** para seu **e-mail** na opção **to**.
+
+![image](screenshots/send-message-to.png)
+
+🚀 Pronto! Agora o workflow está pronto para receber os alertas!
 
