@@ -1,0 +1,120 @@
+{
+  "name": "LogErrorTelegram",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        -80
+      ],
+      "id": "ae5c26d5-b73a-4bc8-a052-97509ec39de7",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "sendTo": "edneifneto@gmail.com",
+        "subject": "ErrorWorkflow",
+        "message": "=<h2>🚨 Erro no Workflow</h2>\n\n<p>Olá,</p>\n\n<p>Foi detectado um erro durante a execução de um workflow.</p>\n\n<h3>Detalhes do erro:</h3>\n\n<ul>\n  <li><strong>Mensagem do erro:</strong> {{$json.message}}</li>\n  <li><strong>URL da requisição:</strong> {{$json.url}}</li>\n  <li><strong>Último node executado:</strong> {{$json.lastNodeExecuted}}</li>\n  <li><strong>Workflow:</strong> {{$json.workflow}}</li>\n</ul>\n\n<p>Recomendamos verificar o node informado para identificar a causa da falha.</p>\n\n<hr>\n\n<p style=\"color: #666; font-size: 12px;\">\nEsta é uma notificação automática gerada pelo sistema de monitoramento do workflow.\n</p>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        -80
+      ],
+      "id": "4476e755-6ea1-4a20-bf2f-481314557ef2",
+      "name": "Send a message",
+      "webhookId": "4f9b532c-07b8-40e8-a76a-cab750ceeef4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iZQiZIUBv4VGsegB",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e3bc2e8a-aa58-4efd-9cc5-20f5500a3177",
+              "name": "url",
+              "value": "={{ $json.execution.url }}",
+              "type": "string"
+            },
+            {
+              "id": "1679ada4-502f-4ecf-8196-44c4053f171d",
+              "name": "message",
+              "value": "={{ $json.execution.error.message }}",
+              "type": "string"
+            },
+            {
+              "id": "d5c2bc71-1372-4549-a958-85a2ce17f2c4",
+              "name": "lastNodeExecuted",
+              "value": "={{ $json.execution.lastNodeExecuted }}",
+              "type": "string"
+            },
+            {
+              "id": "df553a10-ceed-4fcb-afc4-2282d7aedea0",
+              "name": "workflow",
+              "value": "={{ $json.workflow.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -496,
+        -80
+      ],
+      "id": "b2ec27d6-de98-4f24-b1ec-abbeb13df246",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "64e36325-a848-4743-9520-d012d37837aa",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "79662fafd4c4840cc39132e717209a49dbeaf438f162e61a6c6189cb1eef43d9"
+  },
+  "id": "6zvGCghXZ5ZVcHhg",
+  "tags": []
+}
