@@ -389,3 +389,86 @@ Sensação térmica: 31°C
 Umidade: 70%
 Condição: céu parcialmente nublado
 ```
+
+# Configurando o Error Trigger
+
+O **Error Trigger** permite capturar erros que ocorrem em um workflow e executar ações automáticas, como:
+
+- enviar alertas
+- registrar logs
+- notificar administradores
+- executar rotinas de recuperação
+
+Neste projeto, ele é utilizado para **monitorar falhas no bot de clima do Telegram**.
+
+---
+
+## Adicionar Error Trigger
+
+Dentro do workflow **Clima-Telegram**, no canto superior esquerdo da tela, clique no **menu de três pontos** e depois selecione **Settings**.
+
+
+
+Em seguida, na janela **Workflow settings for Clima-Telegram**, localize a opção:
+
+```
+
+Error Workflow (to notify when this one errors)
+
+```
+
+Selecione o workflow **LogErrortelegram**.
+
+⚠️ **Importante:**  
+Os workflows **LogErrortelegram** e **Clima-Telegram** precisam estar **ativos** para que o tratamento de erro funcione corretamente.
+
+---
+
+## Configurar Gmail
+
+Dentro do workflow **LogErrortelegram**, existe um node chamado **Send a message**, responsável por enviar os logs de erro por e-mail.
+
+Para configurá-lo, é necessário adicionar uma credencial do Gmail.
+
+No campo:
+
+```
+
+Credential to connect with
+
+```
+
+Selecione:
+
+```
+
+Create a new Credential
+
+```
+
+Depois escolha **Gmail account** e preencha os seguintes campos:
+
+- **Client ID**
+- **Client Secret**
+- **OAuth Redirect URL**
+
+O valor do **OAuth Redirect URL** deve seguir o formato:
+
+```
+
+SUA_URL/rest/oauth2-credential/callback
+
+```
+
+Exemplo:
+
+```
+https://seu-n8n.com/rest/oauth2-credential/callback
+```
+
+Para obter o **Client ID** e **Client Secret**, siga o passo a passo da documentação oficial do n8n:
+
+https://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/
+
+![Credential Setup](https://github.com/)
+
